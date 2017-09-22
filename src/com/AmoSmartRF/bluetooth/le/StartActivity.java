@@ -131,7 +131,7 @@ public class StartActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.start);
+		setContentView(R.layout.start_custom);
 		getActionBar().setTitle(APP_VER);
 
 		// Intent intent = getIntent();

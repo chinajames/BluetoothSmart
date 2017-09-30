@@ -261,7 +261,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="20dip"
+        android:layout_margin="100dip"
         android:orientation="horizontal" >
 
         <LinearLayout

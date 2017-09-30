@@ -2,6 +2,7 @@ package com.AmoSmartRF.bluetooth.le;
 
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothGatt;
@@ -13,6 +14,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,7 +40,7 @@ public class StartActivity extends Activity implements OnClickListener {
 	
 	public static final int REFRESH = 0x000001;  
 	
-	private final String APP_VER = "AmoSmartRF蓝牙APP v1.2 20161203"; 	// 其他文件广播的定义必须一致	
+	private final String APP_VER = "蓝牙APP 2017"; 	// 其他文件广播的定义必须一致	
 	
 	// SmartRF 开发板的按键值定义
 	final static int BLE_KEY_UP = 1;
@@ -126,6 +128,10 @@ public class StartActivity extends Activity implements OnClickListener {
 	
 	// 退出线程标记
 	boolean bExitThread = false;
+	private CheckBox led_1;
+	private CheckBox led_2;
+	private CheckBox led_3;
+	private CheckBox led_4;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -170,120 +176,21 @@ public class StartActivity extends Activity implements OnClickListener {
 		dht11_Sensor[3] = 0;
 		
 		registerBoradcastReceiver();
+		led_1 = (CheckBox) findViewById(R.id.led1_switch);
+		led_1.setOnCheckedChangeListener(mOnCheckedChangeListener);
+		led_1.setTag("led_1");
 
-		((CheckBox) findViewById(R.id.led1_switch))
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				Log.i(TAG, "led1_switch isChecked = " + isChecked);
-				if (isChecked) {
-					ledx_value[0] = 0x11;
-				} else {
-					ledx_value[0] = 0x10;
-				}
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);				
-
-				// 发现数据发送不够稳定， 再发一次, 笔者认为， 不稳定的原因主要是多线程操作导致的发送与接收冲突，你可以修改成单线程发送与接收即可 ---阿莫
-            	try {  
-                    Thread.sleep(100);  
-                } catch (InterruptedException e) {  
-                    e.printStackTrace();  
-                }
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);				
-			}
-		});
-
-		((CheckBox) findViewById(R.id.led2_switch))
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				Log.i(TAG, "led2_switch isChecked = " + isChecked);
-				if (isChecked) {
-					ledx_value[0] = 0x21;
-				} else {
-					ledx_value[0] = 0x20;
-				}
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);
-
-				// 发现数据发送不够稳定， 再发一次, 笔者认为， 不稳定的原因主要是多线程操作导致的发送与接收冲突，你可以修改成单线程发送与接收即可 ---阿莫
-
-            	try {  
-                    Thread.sleep(100);  
-                } catch (InterruptedException e) {  
-                    e.printStackTrace();  
-                }
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);		
-			}
-		});
+		led_2= (CheckBox) findViewById(R.id.led2_switch);
+		led_2.setOnCheckedChangeListener(mOnCheckedChangeListener);
+		led_2.setTag("led_2");
 		
-		((CheckBox) findViewById(R.id.led3_switch))
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				Log.i(TAG, "led3_switch isChecked = " + isChecked);
-				if (isChecked) {
-					ledx_value[0] = 0x41;
-				} else {
-					ledx_value[0] = 0x40;
-				}
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);
-
-				// 发现数据发送不够稳定， 再发一次
-            	try {  
-                    Thread.sleep(100);  
-                } catch (InterruptedException e) {  
-                    e.printStackTrace();  
-                }
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);
-			}
-		});
+		led_3 = (CheckBox) findViewById(R.id.led3_switch);
+		led_3.setOnCheckedChangeListener(mOnCheckedChangeListener);
+		led_3.setTag("led_3");
 		// 继电器开关操作
-		((CheckBox) findViewById(R.id.relay_switch))
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				Log.i(TAG, "relay_switch isChecked = " + isChecked);
-				if (isChecked) {
-					relay_value[0] = 0x44;
-				} else {
-					relay_value[0] = 0x43;
-				}
-
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						relay_value);
-
-				// 发现数据发送不够稳定， 再发一次, 笔者认为， 不稳定的原因主要是多线程操作导致的发送与接收冲突，你可以修改成单线程发送与接收即可 ---阿莫
-            	try {  
-                    Thread.sleep(100);  
-                } catch (InterruptedException e) {  
-                    e.printStackTrace();  
-                }
-				DeviceScanActivity.WriteCharX(
-						DeviceScanActivity.gattCharacteristic_char1,
-						ledx_value);			
-			}
-		});
+		led_4= (CheckBox) findViewById(R.id.relay_switch);
+		led_4.setOnCheckedChangeListener(mOnCheckedChangeListener);
+		led_4.setTag("led_4");
 				
 		
 		// 连读百分比函数 		
@@ -337,6 +244,49 @@ public class StartActivity extends Activity implements OnClickListener {
 		
 		new MyThread().start();		
 	}
+	
+    private CompoundButton selectView = null;
+	private OnCheckedChangeListener mOnCheckedChangeListener = new OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                if (selectView != null) {
+                    selectView.setChecked(false);
+                }
+                selectView = buttonView;
+            }
+            if (buttonView == led_1) {
+                if (isChecked) {
+                    ledx_value[0] = 0x11;
+                } else {
+                    ledx_value[0] = 0x10;
+                }
+            } else if (buttonView == led_2) {
+                if (isChecked) {
+                    ledx_value[0] = 0x21;
+                } else {
+                    ledx_value[0] = 0x20;
+                }
+            } else if (buttonView == led_3) {
+                if (isChecked) {
+                    ledx_value[0] = 0x41;
+                } else {
+                    ledx_value[0] = 0x40;
+                }
+            } else if (buttonView == led_4) {
+                if (isChecked) {
+                    ledx_value[0] = 0x44;
+                } else {
+                    ledx_value[0] = 0x43;
+                }
+            }
+            Log.d(TAG, String.format("onCheckedChanged %s , Checked = %s , relay_value = %s",buttonView.getTag(), isChecked,Utils.bytesToHexString(ledx_value)));
+            DeviceScanActivity.WriteCharX(DeviceScanActivity.gattCharacteristic_char1,ledx_value);                
+            // 发现数据发送不够稳定， 再发一次, 笔者认为， 不稳定的原因主要是多线程操作导致的发送与接收冲突，你可以修改成单线程发送与接收即可
+            SystemClock.sleep(100);
+            //DeviceScanActivity.WriteCharX(DeviceScanActivity.gattCharacteristic_char1,ledx_value);                
+        }
+    };
 	
 	// 接收 rssi 的广播
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
